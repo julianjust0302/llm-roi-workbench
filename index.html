@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LLM ROI Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F4; --surface:#FFFFFF; --surface-2:#EEF1F0;
+  --ink:#16202B; --ink-2:#465261; --muted:#76818D; --line:#DAE0E2; --line-2:#C5CDD1;
+  --accent:#1F5FBF; --accent-soft:#E4ECF8;
+  --pos:#2B7A4B; --neg:#B0372D;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
+    --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
+    --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
+  --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
+  --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:24px 96px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-size:clamp(26px,5vw,36px);font-weight:700;line-height:1.1}
+h2{font-size:18px;font-weight:600}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.intro{display:flex;flex-direction:column;gap:6px;max-width:620px}
+.intro p{color:var(--ink-2)}
+.settings{display:flex;gap:12px;flex-wrap:wrap}
+.settings label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-2);font-weight:500}
+.settings select{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:8px 10px;min-width:180px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* situations */
+.picker{display:flex;flex-direction:column;gap:10px}
+.lvl{display:flex;flex-direction:column;gap:6px}
+.lvl-h{font-size:13px;color:var(--ink-2)}
+.lvl-h b{font-family:var(--display);font-weight:600;color:var(--ink)}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sit{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.sit:hover{border-color:var(--line-2)}
+.sit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sit[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.sit .n{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.sit .t{font-family:var(--display);font-weight:600;font-size:14.5px;line-height:1.25}
+.sit .d{font-size:12.5px;color:var(--ink-2);line-height:1.35}
+
+/* layout */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.inputs{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sum{font-family:var(--mono);font-size:14px;font-weight:500;white-space:nowrap}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:13px;color:var(--ink-2);font-weight:500}
+.in{display:flex;align-items:stretch;border:1px solid var(--line-2);border-radius:6px;background:var(--surface);overflow:hidden}
+.in:focus-within{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.in input{font:inherit;color:var(--ink);background:transparent;border:0;padding:9px 10px;width:100%;min-width:0;font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums}
+.in input:focus{outline:none}
+.unit{font-size:12px;color:var(--muted);padding:0 10px;white-space:nowrap;border-left:1px solid var(--line);display:flex;align-items:center;background:var(--surface-2)}
+.hint{font-size:11.5px;color:var(--muted);line-height:1.3}
+.calc{display:flex;flex-direction:column;gap:3px;border-top:1px dashed var(--line-2);padding-top:10px}
+.calc div{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2)}
+.calc div span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.calc div.total{font-weight:600;color:var(--ink)}
+.btn{all:unset;cursor:pointer;font-size:13px;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.btn:focus-visible{outline:2px solid var(--accent)}
+
+/* result */
+.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.kpis{display:flex;flex-direction:column}
+.kpi{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.kpi:last-child{border-bottom:0}
+.kpi .k{font-size:13px;color:var(--ink-2)}
+.kpi .v{font-family:var(--mono);font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+.formula{font-size:12px;color:var(--muted);line-height:1.45}
+
+/* notes */
+textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:10px 12px;width:100%;min-height:150px;resize:vertical;line-height:1.5}
+textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.notes-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.copy{all:unset;cursor:pointer;font-size:13px;font-weight:500;color:var(--surface);background:var(--ink);padding:7px 14px;border-radius:6px}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* mobile bottom bar */
+.bar{display:none}
+@media (max-width:820px){
+  .main{grid-template-columns:1fr}
+  .result{position:static}
+  .bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:5;justify-content:space-around;gap:8px;background:var(--surface);border-top:1px solid var(--line-2);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+  .bar div{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted)}
+  .bar b{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--ink)}
+}
+@media (max-width:560px){
+  .sit{padding:9px 10px}
+  .sit .d{display:none}
+  .sit .t{font-size:13.5px}
+}
+@media (max-width:380px){ .fields{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="intro">
+    <span class="eyebrow">Workshop · The ROI of LLMs</span>
+    <h1>LLM ROI Workbench</h1>
+    <p>Pick the situation closest to your use case, then replace the reference values with your own.</p>
+  </div>
+
+  <div class="settings">
+    <label for="country">Country defaults
+      <select id="country"><option value="ch">Switzerland · CHF</option><option value="at">Austria · EUR</option><option value="de">Germany · EUR</option></select>
+    </label>
+    <label for="hor">Time horizon
+      <select id="hor"><option value="3">3 years</option><option value="5">5 years</option></select>
+    </label>
+  </div>
+
+  <section class="picker" id="picker" aria-label="Reference situations"></section>
+
+  <div class="main">
+    <div class="inputs">
+      <div class="card">
+        <div class="card-head"><h3>Benefit per year</h3><span class="sum" id="sum-b"></span></div>
+        <div class="fields">
+          <div class="field"><label for="f-tasks">Tasks per day</label><div class="in"><input id="f-tasks" type="number" inputmode="decimal" min="0"><span class="unit">tasks</span></div></div>
+          <div class="field"><label for="f-days">Working days / year</label><div class="in"><input id="f-days" type="number" inputmode="decimal" min="0"><span class="unit">days</span></div></div>
+          <div class="field"><label for="f-minutes">Minutes saved / task</label><div class="in"><input id="f-minutes" type="number" inputmode="decimal" min="0"><span class="unit">min</span></div></div>
+          <div class="field"><label for="f-rate">Labour cost / hour</label><div class="in"><input id="f-rate" type="number" inputmode="decimal" min="0"><span class="unit cur">CHF/h</span></div></div>
+          <div class="field"><label for="f-r">Realisation factor r</label><div class="in"><input id="f-r" type="number" inputmode="decimal" min="0" max="1" step="0.05"><span class="unit">0–1</span></div><span class="hint">Review effort, adoption, exceptions</span></div>
+        </div>
+        <div class="calc" id="calc-b"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>One-off cost C₀</h3><span class="sum" id="sum-c0"></span></div>
+        <div class="fields">
+          <div class="field"><label for="f-c0">Project cost</label><div class="in"><input id="f-c0" type="number" inputmode="decimal" min="0" step="1000"><span class="unit cur">CHF</span></div><span class="hint" id="h-c0">Design, integration, set-up, governance</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3 id="cr-title">Recurring cost Cᵣ</h3><span class="sum" id="sum-cr"></span></div>
+        <div class="fields" id="opt-fields"></div>
+        <div class="calc" id="calc-cr"></div>
+        <button type="button" class="btn" id="reset">Reset to reference values</button>
+      </div>
+    </div>
+
+    <div class="card result">
+      <h2 id="res-title"></h2>
+      <div class="kpis" id="kpis"></div>
+      <p class="formula">ROI after n years = (n × Benefit − C₀ − n × Cᵣ) / (C₀ + n × Cᵣ), no discounting.</p>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><h3><label for="notes">Notes</label></h3></div>
+    <textarea id="notes" placeholder="Your use case, assumptions, what surprised you …"></textarea>
+    <div class="notes-foot"><span id="notes-status">Notes stay in this browser only.</span><button type="button" class="copy" id="copy">Copy notes and results</button></div>
+  </section>
+</div>
+
+<div class="bar" aria-hidden="true"><div>ROI yr 1<b id="bar-r1"></b></div><div><span id="bar-r3l">ROI yr 3</span><b id="bar-r3"></b></div><div>Break-even<b id="bar-be"></b></div></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+
+const LEVELS={
+  basic:{name:"Basic",ex:"Knowledge assistant",tasks:250,days:220,minutes:5,r:0.7,pm:6},
+  adv:{name:"Advanced",ex:"Agentic case handling",tasks:200,days:220,minutes:20,r:0.6,pm:15}
+};
+/* Country defaults. CH = slide reference values. AT/DE: labour cost per hour 2025 (Destatis EU comparison),
+   other values are editable estimates; CHF amounts converted at ~1.07 EUR per CHF. */
+const COUNTRY={
+  ch:{cur:"CHF",rate:65,fte:140000,fx:0.80,kwh:0.22,gpuH:2.15,hw:{basic:70000,adv:150000}},
+  at:{cur:"EUR",rate:46.3,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:75000,adv:160000}},
+  de:{cur:"EUR",rate:45,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:75000,adv:160000}}
+};
+const OPTS={
+  basic:{
+    rent:{tokIn:1800,tokOut:200,pIn:2,pOut:10,fx:0.8,other:5000,staff:0.4,fte:140000},
+    host:{gpus:2,gpuH:2.15,hours:8760,other:5000,staff:0.75,fte:140000},
+    own:{hw:70000,dep:3,maint:12,kw:1.5,pue:1.4,kwh:0.22,other:20000,staff:1.4,fte:140000}
+  },
+  adv:{
+    rent:{tokIn:60000,tokOut:12000,pIn:10,pOut:50,fx:0.8,other:15000,staff:0.8,fte:140000},
+    host:{gpus:4,gpuH:2.15,hours:8760,other:15000,staff:1.2,fte:140000},
+    own:{hw:150000,dep:3,maint:12,kw:3,pue:1.4,kwh:0.22,other:25000,staff:1.8,fte:140000}
+  }
+};
+const SITS=[
+  {n:1,lvl:"basic",o:"rent",t:"Rent",d:"Mid-tier API, retrieval on own documents"},
+  {n:2,lvl:"basic",o:"host",t:"Host",d:"Open-weight model on 2 rented GPUs"},
+  {n:3,lvl:"basic",o:"own",t:"Own",d:"Own 2-GPU server in own server room"},
+  {n:4,lvl:"adv",o:"rent",t:"Rent",d:"Frontier API for multi-step agents"},
+  {n:5,lvl:"adv",o:"host",t:"Host",d:"Open-weight model on 4 rented GPUs"},
+  {n:6,lvl:"adv",o:"own",t:"Own",d:"Own 4-GPU server"}
+];
+const FIELDS={
+  rent:[["tokIn","Input tokens / task","tokens"],["tokOut","Output tokens / task","tokens"],["pIn","Price input","$/M tok"],["pOut","Price output","$/M tok"],["fx","USD → local currency","rate"],["other","Retrieval, hosting","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]],
+  host:[["gpus","Rented GPUs","GPUs"],["gpuH","Price per GPU-hour","CUR"],["hours","GPU hours / year","h","8,760 = 24/7"],["other","Retrieval, hosting","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]],
+  own:[["hw","Hardware","CUR"],["dep","Depreciation","years"],["maint","Maintenance","% p.a."],["kw","Power draw","kW"],["pue","PUE","factor"],["kwh","Electricity price","CUR/kWh"],["other","External audit","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]]
+};
+
+let sit=1, S;
+const C=()=>COUNTRY[$("#country").value];
+const H=()=>+$("#hor").value;
+function load(n){ sit=n; const s=SITS.find(x=>x.n===n); const L=LEVELS[s.lvl], c=C();
+  const p={...OPTS[s.lvl][s.o]}; p.fte=c.fte;
+  if("fx" in p) p.fx=c.fx; if("kwh" in p) p.kwh=c.kwh; if("gpuH" in p) p.gpuH=c.gpuH; if("hw" in p) p.hw=c.hw[s.lvl];
+  S={lvl:s.lvl,o:s.o,tasks:L.tasks,days:L.days,minutes:L.minutes,rate:c.rate,r:L.r,c0:Math.round(L.pm*c.fte/12/1000)*1000,p}; }
+
+/* formatting */
+function k(v){ const a=Math.abs(v); let s; if(a>=1e6) s=(v/1e6).toFixed(2)+"M"; else if(a>=1e4) s=Math.round(v/1e3)+"k"; else if(a>=1e3) s=(v/1e3).toFixed(1)+"k"; else s=Math.round(v)+""; return C().cur+" "+s.replace("-","−"); }
+const int=v=>Math.round(v).toLocaleString("en-US");
+function pct(v){ const p=Math.round(v*100); return (p>0?"+":p<0?"−":"")+Math.abs(p)+"%"; }
+const cls=v=>v>0.0005?"pos":v<-0.0005?"neg":"";
+
+/* model */
+function infra(){ const p=S.p, ty=S.tasks*S.days;
+  if(S.o==="rent") return {l:"API tokens",v:ty*(p.tokIn*p.pIn+p.tokOut*p.pOut)/1e6*p.fx};
+  if(S.o==="host") return {l:"GPU rent",v:p.gpus*p.gpuH*p.hours};
+  return {l:"Depreciation, maintenance, power",v:(p.dep>0?p.hw/p.dep:0)+p.hw*p.maint/100+p.kw*8760*p.pue*p.kwh};
+}
+const roi=(B,C0,Cr,n)=>{ const c=C0+n*Cr; return c>0?(n*B-c)/c:0; };
+
+/* render */
+function renderPicker(){
+  let h="";
+  for(const lvl of ["basic","adv"]){
+    h+=`<div class="lvl"><div class="lvl-h"><b>${LEVELS[lvl].name}</b> · ${LEVELS[lvl].ex}</div><div class="row">`;
+    for(const s of SITS.filter(x=>x.lvl===lvl)) h+=`<button type="button" class="sit" data-n="${s.n}" aria-pressed="${s.n===sit}"><span class="n">Situation ${s.n}</span><span class="t">${s.t}</span><span class="d">${s.d}</span></button>`;
+    h+=`</div></div>`;
+  }
+  $("#picker").innerHTML=h;
+  document.querySelectorAll(".sit").forEach(b=>b.addEventListener("click",()=>{ load(+b.dataset.n); renderPicker(); sync(); update(); }));
+}
+function sync(){
+  for(const f of ["tasks","days","minutes","rate","r","c0"]) $("#f-"+f).value=S[f];
+  document.querySelectorAll(".unit.cur").forEach(u=>u.textContent=u.textContent.replace(/^[A-Z]{3}/,C().cur));
+  $("#h-c0").textContent=`Design, integration, set-up, governance (${LEVELS[S.lvl].pm} person-months)`;
+  $("#opt-fields").innerHTML=FIELDS[S.o].map(([key,l,u,h])=>`<div class="field"><label for="o-${key}">${l}</label><div class="in"><input id="o-${key}" type="number" inputmode="decimal" min="0" value="${S.p[key]}"><span class="unit">${u.replace("CUR",C().cur)}</span></div>${h?`<span class="hint">${h}</span>`:""}</div>`).join("");
+  document.querySelectorAll("#opt-fields input").forEach(i=>i.addEventListener("input",()=>{ const v=parseFloat(i.value); S.p[i.id.slice(2)]=isNaN(v)?0:v; update(); }));
+}
+for(const f of ["tasks","days","minutes","rate","r","c0"]) $("#f-"+f).addEventListener("input",e=>{ const v=parseFloat(e.target.value); S[f]=isNaN(v)?0:v; update(); });
+$("#country").addEventListener("change",()=>{ load(sit); sync(); update(); });
+$("#hor").addEventListener("change",update);
+$("#reset").addEventListener("click",()=>{ load(sit); sync(); update(); });
+
+let last={};
+function update(){
+  const ty=S.tasks*S.days, hrs=ty*S.minutes/60, gross=hrs*S.rate, B=gross*S.r;
+  const i=infra(), staff=S.p.staff*S.p.fte, Cr=i.v+staff+S.p.other, C0=S.c0, net=B-Cr;
+  const be=net>0?Math.max(1,Math.ceil(C0/(net/12))):null;
+  const n=H(); const r=Array.from({length:n},(_,j)=>roi(B,C0,Cr,j+1));
+  const s=SITS.find(x=>x.n===sit);
+  $("#sum-b").textContent=k(B); $("#sum-c0").textContent=k(C0); $("#sum-cr").textContent=k(Cr);
+  $("#calc-b").innerHTML=`<div><span>Tasks per year</span><span>${int(ty)}</span></div><div><span>Hours saved</span><span>${int(hrs)} h</span></div><div><span>Gross value</span><span>${k(gross)}</span></div><div class="total"><span>Realised benefit (× r)</span><span>${k(B)}</span></div>`;
+  $("#cr-title").textContent=`Recurring cost Cᵣ · ${s.t}`;
+  $("#calc-cr").innerHTML=`<div><span>${i.l}</span><span>${k(i.v)}</span></div><div><span>${S.o==="own"?"External audit":"Retrieval, hosting"}</span><span>${k(S.p.other)}</span></div><div><span>Staff (${S.p.staff} FTE)</span><span>${k(staff)}</span></div><div class="total"><span>Cᵣ per year</span><span>${k(Cr)}</span></div>`;
+  $("#res-title").textContent=`Situation ${s.n} · ${LEVELS[s.lvl].name} · ${s.t}`;
+  const beTxt=be===null?"never":"month "+be;
+  $("#kpis").innerHTML=[
+    ["Net benefit / year",`<span class="${cls(net)}">${k(net)}</span>`],
+    ["Break-even",beTxt],
+    ...r.map((v,j)=>[`ROI year ${j+1}`,`<span class="${cls(v)}">${pct(v)}</span>`])
+  ].map(([a,b])=>`<div class="kpi"><span class="k">${a}</span><span class="v">${b}</span></div>`).join("");
+  $("#bar-r1").textContent=pct(r[0]); $("#bar-r3").textContent=pct(r[n-1]); $("#bar-r3l").textContent=`ROI yr ${n}`; $("#bar-be").textContent=be===null?"never":"m "+be;
+  last={s,B,C0,Cr,net,beTxt,r};
+}
+
+/* notes */
+const KEY="llm-roi-notes";
+try{ const saved=localStorage.getItem(KEY); if(saved) $("#notes").value=saved; }catch(e){}
+$("#notes").addEventListener("input",e=>{ try{ localStorage.setItem(KEY,e.target.value); }catch(err){} });
+$("#copy").addEventListener("click",()=>{
+  const L=last, txt=`Situation ${L.s.n} (${LEVELS[L.s.lvl].name}, ${L.s.t})
+Benefit/yr: ${k(L.B)} | C0: ${k(L.C0)} | Cr/yr: ${k(L.Cr)} | Net/yr: ${k(L.net)}
+Break-even: ${L.beTxt} | ROI yr ${L.r.map((v,j)=>j+1).join("/")}: ${L.r.map(pct).join(" / ")}
+Country defaults: ${$("#country").selectedOptions[0].textContent}
+
+Notes:
+${$("#notes").value}`;
+  const done=()=>{ $("#notes-status").textContent="Copied to clipboard."; };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>{ $("#notes").select(); $("#notes-status").textContent="Copy failed. Select the notes and copy them manually."; }); }
+  else { $("#notes").select(); $("#notes-status").textContent="Select the notes and copy them manually."; }
+});
+
+load(1); renderPicker(); sync(); update();
+})();
+</script>
+</body>
+</html>
