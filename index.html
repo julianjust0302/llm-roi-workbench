@@ -13,6 +13,7 @@
   --ink:#16202B; --ink-2:#465261; --muted:#76818D; --line:#DAE0E2; --line-2:#C5CDD1;
   --accent:#1F5FBF; --accent-soft:#E4ECF8;
   --pos:#2B7A4B; --neg:#B0372D;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -23,6 +24,7 @@
     --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
     --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
     --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
   }
 }
 :root[data-theme="dark"]{
@@ -30,6 +32,7 @@
   --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
   --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
   --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -45,7 +48,7 @@ p{margin:0}
 .intro p{color:var(--ink-2)}
 .settings{display:flex;gap:12px;flex-wrap:wrap}
 .settings label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-2);font-weight:500}
-.settings select{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:8px 10px;min-width:180px}
+.settings select,.settings input{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:8px 10px;min-width:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* situations */
@@ -58,6 +61,8 @@ p{margin:0}
 .sit:hover{border-color:var(--line-2)}
 .sit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sit[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.sit .top{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+.sit .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
 .sit .n{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
 .sit .t{font-family:var(--display);font-weight:600;font-size:14.5px;line-height:1.25}
 .sit .d{font-size:12.5px;color:var(--ink-2);line-height:1.35}
@@ -113,18 +118,35 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
 @media (max-width:560px){
   .sit{padding:9px 10px}
   .sit .d{display:none}
+  .sit .top{flex-direction:column;gap:0}
   .sit .t{font-size:13.5px}
 }
 @media (max-width:380px){ .fields{grid-template-columns:1fr} }
+
+/* cost distribution */
+.dist{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line-2);padding-top:12px}
+.stack{display:flex;gap:2px;height:22px;border-radius:4px;overflow:hidden;background:var(--surface-2)}
+.stack div{height:100%;min-width:2px}
+.legend{display:flex;flex-direction:column}
+.legend div{display:grid;grid-template-columns:12px minmax(0,1fr) auto 44px;gap:8px;align-items:center;font-size:13px;color:var(--ink-2);padding:3px 0}
+.legend i{width:10px;height:10px;border-radius:2px;display:block}
+.legend .val{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.legend .pc{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+.legend div.total{font-weight:600;color:var(--ink);border-top:1px solid var(--line);margin-top:2px;padding-top:6px}
+.takeaway{font-size:12.5px;color:var(--ink-2)}
+.refline{font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:6px;padding:8px 10px}
+.refline b{font-family:var(--mono);font-weight:500}
+.fields.single{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sub{font-size:12px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <div class="intro">
-    <span class="eyebrow">Workshop · The ROI of LLMs</span>
+    <span class="eyebrow">LLM ROI Workshop · Group exercise</span>
     <h1>LLM ROI Workbench</h1>
-    <p>Pick the situation closest to your use case, then replace the reference values with your own.</p>
+    <p>Enter your situation's reference values, adapt them to a company you know, and vary the two most uncertain parameters.</p>
   </div>
 
   <div class="settings">
@@ -136,18 +158,19 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
     </label>
   </div>
 
-  <section class="picker" id="picker" aria-label="Reference situations"></section>
+  <section class="picker" id="picker" aria-label="Situations"></section>
 
   <div class="main">
     <div class="inputs">
       <div class="card">
-        <div class="card-head"><h3>Benefit per year</h3><span class="sum" id="sum-b"></span></div>
+        <div class="card-head"><h3>Annual benefit B = N × t × l × r</h3><span class="sum" id="sum-b"></span></div>
         <div class="fields">
-          <div class="field"><label for="f-tasks">Tasks per day</label><div class="in"><input id="f-tasks" type="number" inputmode="decimal" min="0"><span class="unit">tasks</span></div></div>
-          <div class="field"><label for="f-days">Working days / year</label><div class="in"><input id="f-days" type="number" inputmode="decimal" min="0"><span class="unit">days</span></div></div>
-          <div class="field"><label for="f-minutes">Minutes saved / task</label><div class="in"><input id="f-minutes" type="number" inputmode="decimal" min="0"><span class="unit">min</span></div></div>
-          <div class="field"><label for="f-rate">Labour cost / hour</label><div class="in"><input id="f-rate" type="number" inputmode="decimal" min="0"><span class="unit cur">CHF/h</span></div></div>
-          <div class="field"><label for="f-r">Realisation factor r</label><div class="in"><input id="f-r" type="number" inputmode="decimal" min="0" max="1" step="0.05"><span class="unit">0–1</span></div><span class="hint">Review effort, adoption, exceptions</span></div>
+          <div class="field"><label for="f-users">Users (or 1 for case volume)</label><div class="in"><input id="f-users" type="number" inputmode="decimal" min="0"><span class="unit">users</span></div></div>
+          <div class="field"><label for="f-tpu">Tasks per user and day</label><div class="in"><input id="f-tpu" type="number" inputmode="decimal" min="0"><span class="unit">tasks</span></div></div>
+          <div class="field"><label for="f-days">Working days per year</label><div class="in"><input id="f-days" type="number" inputmode="decimal" min="0"><span class="unit">days</span></div></div>
+          <div class="field"><label for="f-minutes">t · Minutes saved per task</label><div class="in"><input id="f-minutes" type="number" inputmode="decimal" min="0"><span class="unit">min</span></div></div>
+          <div class="field"><label for="f-rate">l · Cost per hour</label><div class="in"><input id="f-rate" type="number" inputmode="decimal" min="0"><span class="unit cur">CHF/h</span></div><span class="hint">Fully loaded labor cost</span></div>
+          <div class="field"><label for="f-r">r · Realization factor</label><div class="in"><input id="f-r" type="number" inputmode="decimal" min="0" max="1" step="0.05"><span class="unit">0–1</span></div><span class="hint">Adoption, review effort, exceptions</span></div>
         </div>
         <div class="calc" id="calc-b"></div>
       </div>
@@ -155,14 +178,22 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
       <div class="card">
         <div class="card-head"><h3>One-off cost C₀</h3><span class="sum" id="sum-c0"></span></div>
         <div class="fields">
-          <div class="field"><label for="f-c0">Project cost</label><div class="in"><input id="f-c0" type="number" inputmode="decimal" min="0" step="1000"><span class="unit cur">CHF</span></div><span class="hint" id="h-c0">Design, integration, set-up, governance</span></div>
+          <div class="field"><label for="f-pm">Internal effort</label><div class="in"><input id="f-pm" type="number" inputmode="decimal" min="0" step="0.5"><span class="unit">PM</span></div><span class="hint" id="h-pm"></span></div>
+          <div class="field"><label for="f-ext">External one-off cost</label><div class="in"><input id="f-ext" type="number" inputmode="decimal" min="0" step="1000"><span class="unit cur">CHF</span></div><span class="hint">E.g. paid system integrator</span></div>
         </div>
       </div>
 
       <div class="card">
         <div class="card-head"><h3 id="cr-title">Recurring cost Cᵣ</h3><span class="sum" id="sum-cr"></span></div>
+        <div class="sub" id="usage-title">Model usage</div>
         <div class="fields" id="opt-fields"></div>
-        <div class="calc" id="calc-cr"></div>
+        <div class="sub">Staff and other</div>
+        <div class="fields" id="common-fields"></div>
+        <div class="dist">
+          <div class="stack" id="stack" role="img" aria-label="Distribution of recurring cost"></div>
+          <div class="legend" id="legend"></div>
+          <p class="takeaway" id="takeaway"></p>
+        </div>
         <button type="button" class="btn" id="reset">Reset to reference values</button>
       </div>
     </div>
@@ -170,126 +201,138 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
     <div class="card result">
       <h2 id="res-title"></h2>
       <div class="kpis" id="kpis"></div>
-      <p class="formula">ROI after n years = (n × Benefit − C₀ − n × Cᵣ) / (C₀ + n × Cᵣ), no discounting.</p>
+      <p class="refline" id="refline"></p>
+      <p class="formula">ROI after n years = (n × B − C₀ − n × Cᵣ) / (C₀ + n × Cᵣ). Break-even month = C₀ / ((B − Cᵣ) / 12).</p>
     </div>
   </div>
 
   <section class="card">
-    <div class="card-head"><h3><label for="notes">Notes</label></h3></div>
-    <textarea id="notes" placeholder="Your use case, assumptions, what surprised you …"></textarea>
+    <div class="card-head"><h3><label for="notes">Notes for the discussion</label></h3></div>
+    <textarea id="notes" placeholder="Result: ROI year 1 and 3, break-even, compared with situation 1&#10;Tipping point: which parameter, by how much, would make a neighbouring situation better?&#10;Beyond the numbers: what does the example miss?"></textarea>
     <div class="notes-foot"><span id="notes-status">Notes stay in this browser only.</span><button type="button" class="copy" id="copy">Copy notes and results</button></div>
   </section>
 </div>
 
-<div class="bar" aria-hidden="true"><div>ROI yr 1<b id="bar-r1"></b></div><div><span id="bar-r3l">ROI yr 3</span><b id="bar-r3"></b></div><div>Break-even<b id="bar-be"></b></div></div>
+<div class="bar" aria-hidden="true"><div>ROI yr 1<b id="bar-r1"></b></div><div><span id="bar-rnl">ROI yr 3</span><b id="bar-rn"></b></div><div>Break-even<b id="bar-be"></b></div></div>
 
 <script>
 (function(){
 "use strict";
-const $=s=>document.querySelector(s);
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
+/* Reference values: LLM ROI Workshop v10, appendix (Sept 2026). */
 const LEVELS={
-  basic:{name:"Basic",ex:"Knowledge assistant",tasks:250,days:220,minutes:5,r:0.7,pm:6},
-  adv:{name:"Advanced",ex:"Agentic case handling",tasks:200,days:220,minutes:20,r:0.6,pm:15}
-};
-/* Country defaults. CH = slide reference values. AT/DE: labour cost per hour 2025 (Destatis EU comparison),
-   other values are editable estimates; CHF amounts converted at ~1.07 EUR per CHF. */
-const COUNTRY={
-  ch:{cur:"CHF",rate:65,fte:140000,fx:0.80,kwh:0.22,gpuH:2.15,hw:{basic:70000,adv:150000}},
-  at:{cur:"EUR",rate:46.3,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:75000,adv:160000}},
-  de:{cur:"EUR",rate:45,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:75000,adv:160000}}
+  basic:{name:"Basic",ex:"Knowledge assistant",users:50,tpu:5,days:220,minutes:5,r:0.7,pm:6,hosting:5000,assess:5000},
+  adv:{name:"Advanced",ex:"Agentic case handling",users:1,tpu:200,days:220,minutes:20,r:0.6,pm:15,hosting:15000,assess:10000}
 };
 const OPTS={
-  basic:{
-    rent:{tokIn:1800,tokOut:200,pIn:2,pOut:10,fx:0.8,other:5000,staff:0.4,fte:140000},
-    host:{gpus:2,gpuH:2.15,hours:8760,other:5000,staff:0.75,fte:140000},
-    own:{hw:70000,dep:3,maint:12,kw:1.5,pue:1.4,kwh:0.22,other:20000,staff:1.4,fte:140000}
-  },
-  adv:{
-    rent:{tokIn:60000,tokOut:12000,pIn:10,pOut:50,fx:0.8,other:15000,staff:0.8,fte:140000},
-    host:{gpus:4,gpuH:2.15,hours:8760,other:15000,staff:1.2,fte:140000},
-    own:{hw:150000,dep:3,maint:12,kw:3,pue:1.4,kwh:0.22,other:25000,staff:1.8,fte:140000}
-  }
+  basic:{rent:{tokIn:1500,tokOut:250,pIn:2,pOut:10,staff:0.4},host:{gpus:1,hours:8760,staff:0.6},own:{dep:3,maint:12,kw:0.4,pue:1.4,staff:0.9}},
+  adv:{rent:{tokIn:60000,tokOut:12000,pIn:10,pOut:50,staff:0.8},host:{gpus:4,hours:8760,staff:1.2},own:{dep:3,maint:12,kw:1.5,pue:1.4,staff:1.6}}
+};
+/* CH = workshop values. AT/DE: labor cost per hour 2025 (Destatis EU comparison); the rest are editable estimates. */
+const COUNTRY={
+  ch:{cur:"CHF",rate:65,fte:140000,fx:0.80,kwh:0.22,gpuH:2.15,hw:{basic:25000,adv:100000}},
+  at:{cur:"EUR",rate:46.3,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:27000,adv:107000}},
+  de:{cur:"EUR",rate:45,fte:100000,fx:0.86,kwh:0.20,gpuH:2.30,hw:{basic:27000,adv:107000}}
 };
 const SITS=[
-  {n:1,lvl:"basic",o:"rent",t:"Rent",d:"Mid-tier API, retrieval on own documents"},
-  {n:2,lvl:"basic",o:"host",t:"Host",d:"Open-weight model on 2 rented GPUs"},
-  {n:3,lvl:"basic",o:"own",t:"Own",d:"Own 2-GPU server in own server room"},
-  {n:4,lvl:"adv",o:"rent",t:"Rent",d:"Frontier API for multi-step agents"},
-  {n:5,lvl:"adv",o:"host",t:"Host",d:"Open-weight model on 4 rented GPUs"},
-  {n:6,lvl:"adv",o:"own",t:"Own",d:"Own 4-GPU server"}
+  {n:1,lvl:"basic",o:"rent",t:"Start small",d:()=>"Mid-tier API with retrieval",tag:"Worked example"},
+  {n:2,lvl:"basic",o:"host",t:"Controlled basic",d:()=>"Open-weight model on 1 rented GPU",tag:"Group 2"},
+  {n:3,lvl:"basic",o:"own",t:"Own small server",d:()=>`1-GPU server (${cur()} ${Math.round(C().hw.basic/1000)}k) on premises`,tag:"Group 3"},
+  {n:4,lvl:"adv",o:"rent",t:"Scale fast",d:()=>"Frontier API for multi-step agents",tag:"Group 4"},
+  {n:5,lvl:"adv",o:"host",t:"Scale with control",d:()=>"70–120B open-weight on 4 rented GPUs",tag:"Group 5"},
+  {n:6,lvl:"adv",o:"own",t:"Own GPU server",d:()=>`4-GPU server (${cur()} ${Math.round(C().hw.adv/1000)}k), can serve more use cases`,tag:"Group 6"}
 ];
+const ONAME={rent:"Rent",host:"Host",own:"Own"};
 const FIELDS={
-  rent:[["tokIn","Input tokens / task","tokens"],["tokOut","Output tokens / task","tokens"],["pIn","Price input","$/M tok"],["pOut","Price output","$/M tok"],["fx","USD → local currency","rate"],["other","Retrieval, hosting","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]],
-  host:[["gpus","Rented GPUs","GPUs"],["gpuH","Price per GPU-hour","CUR"],["hours","GPU hours / year","h","8,760 = 24/7"],["other","Retrieval, hosting","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]],
-  own:[["hw","Hardware","CUR"],["dep","Depreciation","years"],["maint","Maintenance","% p.a."],["kw","Power draw","kW"],["pue","PUE","factor"],["kwh","Electricity price","CUR/kWh"],["other","External audit","CUR/yr"],["staff","Staff","FTE"],["fte","Cost per FTE","CUR/yr"]]
+  rent:[["tokIn","Input tokens per task","tokens"],["tokOut","Output tokens per task","tokens"],["pIn","Price input","USD/M"],["pOut","Price output","USD/M"],["fx","USD → CUR","rate"]],
+  host:[["gpus","Rented GPUs","GPUs"],["gpuH","Price per GPU-hour","CUR/h","Incl. energy"],["hours","GPU hours per year","h","8,760 = 24/7"]],
+  own:[["hw","Hardware (complete system)","CUR"],["dep","Depreciation","years"],["maint","Maintenance","% p.a."],["kw","Average power draw","kW","Incl. idle time"],["pue","PUE","factor"],["kwh","Electricity price","CUR/kWh"]]
 };
+const COMMON=[["staff","Staff","FTE","Additional to Rent: see workshop"],["fte","Cost per FTE","CUR/yr"],["hosting","Hosting and retrieval","CUR/yr","E.g. vector DB"],["assess","External assessments","CUR/yr","Audits, DPIA reviews"]];
+
+const C=()=>COUNTRY[$("#country").value];
+const cur=()=>C().cur;
+const H=()=>+$("#hor").value;
 
 let sit=1, S;
-const C=()=>COUNTRY[$("#country").value];
-const H=()=>+$("#hor").value;
-function load(n){ sit=n; const s=SITS.find(x=>x.n===n); const L=LEVELS[s.lvl], c=C();
-  const p={...OPTS[s.lvl][s.o]}; p.fte=c.fte;
-  if("fx" in p) p.fx=c.fx; if("kwh" in p) p.kwh=c.kwh; if("gpuH" in p) p.gpuH=c.gpuH; if("hw" in p) p.hw=c.hw[s.lvl];
-  S={lvl:s.lvl,o:s.o,tasks:L.tasks,days:L.days,minutes:L.minutes,rate:c.rate,r:L.r,c0:Math.round(L.pm*c.fte/12/1000)*1000,p}; }
+function preset(n){ const s=SITS.find(x=>x.n===n), L=LEVELS[s.lvl], c=C();
+  const p={...OPTS[s.lvl][s.o]};
+  if(s.o==="rent") p.fx=c.fx; if(s.o==="host") p.gpuH=c.gpuH; if(s.o==="own"){ p.hw=c.hw[s.lvl]; p.kwh=c.kwh; }
+  return {lvl:s.lvl,o:s.o,users:L.users,tpu:L.tpu,days:L.days,minutes:L.minutes,rate:c.rate,r:L.r,pm:L.pm,ext:0,
+          staff:p.staff,fte:c.fte,hosting:L.hosting,assess:L.assess,p}; }
+function load(n){ sit=n; S=preset(n); }
+
+/* model */
+function calc(st){
+  const N=st.users*st.tpu*st.days, hrs=N*st.minutes/60, gross=hrs*st.rate, B=gross*st.r;
+  const C0=st.pm*st.fte/12+st.ext, p=st.p;
+  let usage=0, energy=0, usageLabel;
+  if(st.o==="rent"){ usage=N*(p.tokIn*p.pIn+p.tokOut*p.pOut)/1e6*p.fx; usageLabel="Tokens"; }
+  else if(st.o==="host"){ usage=p.gpus*p.gpuH*p.hours; usageLabel="GPU rent"; }
+  else { usage=(p.dep>0?p.hw/p.dep:0)+p.hw*p.maint/100; energy=p.kw*8760*p.pue*p.kwh; usageLabel="Hardware (depreciation + maintenance)"; }
+  const staff=st.staff*st.fte, Cr=staff+usage+energy+st.hosting+st.assess, net=B-Cr;
+  const n=H(), roi=Array.from({length:n},(_,j)=>{ const y=j+1, c=C0+y*Cr; return c>0?(y*B-c)/c:0; });
+  const be=net>0?Math.max(1,Math.ceil(C0/(net/12))):null;
+  return {N,hrs,gross,B,C0,Cr,net,roi,be,parts:[
+    ["Staff",staff,"var(--s1)"],[usageLabel,usage,"var(--s2)"],["Energy",energy,"var(--s3)"],["Hosting and retrieval",st.hosting,"var(--s4)"],["External assessments",st.assess,"var(--s5)"]]};
+}
 
 /* formatting */
-function k(v){ const a=Math.abs(v); let s; if(a>=1e6) s=(v/1e6).toFixed(2)+"M"; else if(a>=1e4) s=Math.round(v/1e3)+"k"; else if(a>=1e3) s=(v/1e3).toFixed(1)+"k"; else s=Math.round(v)+""; return C().cur+" "+s.replace("-","−"); }
+function k(v){ const a=Math.abs(v); let s; if(a>=1e6) s=(v/1e6).toFixed(2)+"M"; else if(a>=1e4) s=Math.round(v/1e3)+"k"; else if(a>=1e3) s=(v/1e3).toFixed(1)+"k"; else if(a>=100) s=(v/1e3).toFixed(2)+"k"; else s=Math.round(v)+""; return cur()+" "+s.replace("-","−"); }
 const int=v=>Math.round(v).toLocaleString("en-US");
 function pct(v){ const p=Math.round(v*100); return (p>0?"+":p<0?"−":"")+Math.abs(p)+"%"; }
 const cls=v=>v>0.0005?"pos":v<-0.0005?"neg":"";
-
-/* model */
-function infra(){ const p=S.p, ty=S.tasks*S.days;
-  if(S.o==="rent") return {l:"API tokens",v:ty*(p.tokIn*p.pIn+p.tokOut*p.pOut)/1e6*p.fx};
-  if(S.o==="host") return {l:"GPU rent",v:p.gpus*p.gpuH*p.hours};
-  return {l:"Depreciation, maintenance, power",v:(p.dep>0?p.hw/p.dep:0)+p.hw*p.maint/100+p.kw*8760*p.pue*p.kwh};
-}
-const roi=(B,C0,Cr,n)=>{ const c=C0+n*Cr; return c>0?(n*B-c)/c:0; };
+const beTxt=be=>be===null?"never":"month "+be;
 
 /* render */
 function renderPicker(){
   let h="";
   for(const lvl of ["basic","adv"]){
     h+=`<div class="lvl"><div class="lvl-h"><b>${LEVELS[lvl].name}</b> · ${LEVELS[lvl].ex}</div><div class="row">`;
-    for(const s of SITS.filter(x=>x.lvl===lvl)) h+=`<button type="button" class="sit" data-n="${s.n}" aria-pressed="${s.n===sit}"><span class="n">Situation ${s.n}</span><span class="t">${s.t}</span><span class="d">${s.d}</span></button>`;
+    for(const s of SITS.filter(x=>x.lvl===lvl)) h+=`<button type="button" class="sit" data-n="${s.n}" aria-pressed="${s.n===sit}"><span class="top"><span class="n">${s.n} · ${ONAME[s.o]}</span><span class="tag">${s.tag}</span></span><span class="t">${s.t}</span><span class="d">${s.d()}</span></button>`;
     h+=`</div></div>`;
   }
   $("#picker").innerHTML=h;
-  document.querySelectorAll(".sit").forEach(b=>b.addEventListener("click",()=>{ load(+b.dataset.n); renderPicker(); sync(); update(); }));
+  $$(".sit").forEach(b=>b.addEventListener("click",()=>{ load(+b.dataset.n); renderPicker(); sync(); update(); }));
 }
+const fieldHtml=(id,l,u,h,v)=>`<div class="field"><label for="${id}">${l}</label><div class="in"><input id="${id}" type="number" inputmode="decimal" min="0" value="${v}"><span class="unit">${u.replace("CUR",cur())}</span></div>${h?`<span class="hint">${h}</span>`:""}</div>`;
 function sync(){
-  for(const f of ["tasks","days","minutes","rate","r","c0"]) $("#f-"+f).value=S[f];
-  document.querySelectorAll(".unit.cur").forEach(u=>u.textContent=u.textContent.replace(/^[A-Z]{3}/,C().cur));
-  $("#h-c0").textContent=`Design, integration, set-up, governance (${LEVELS[S.lvl].pm} person-months)`;
-  $("#opt-fields").innerHTML=FIELDS[S.o].map(([key,l,u,h])=>`<div class="field"><label for="o-${key}">${l}</label><div class="in"><input id="o-${key}" type="number" inputmode="decimal" min="0" value="${S.p[key]}"><span class="unit">${u.replace("CUR",C().cur)}</span></div>${h?`<span class="hint">${h}</span>`:""}</div>`).join("");
-  document.querySelectorAll("#opt-fields input").forEach(i=>i.addEventListener("input",()=>{ const v=parseFloat(i.value); S.p[i.id.slice(2)]=isNaN(v)?0:v; update(); }));
+  for(const f of ["users","tpu","days","minutes","rate","r","pm","ext"]) $("#f-"+f).value=S[f];
+  $$(".unit.cur").forEach(u=>u.textContent=u.textContent.replace(/^[A-Z]{3}/,cur()));
+  $("#usage-title").textContent=S.o==="rent"?"Model usage · tokens":S.o==="host"?"Model usage · rented GPUs":"Model usage · own hardware and energy";
+  $("#opt-fields").innerHTML=FIELDS[S.o].map(([key,l,u,h])=>fieldHtml("o-"+key,l,u,h,S.p[key])).join("");
+  $("#common-fields").innerHTML=COMMON.map(([key,l,u,h])=>fieldHtml("c-"+key,l,u,key==="staff"?`Reference: Rent ${OPTS[S.lvl].rent.staff}, Host ${OPTS[S.lvl].host.staff}, Own ${OPTS[S.lvl].own.staff}`:h,S[key])).join("");
+  $$("#opt-fields input").forEach(i=>i.addEventListener("input",()=>{ const v=parseFloat(i.value); S.p[i.id.slice(2)]=isNaN(v)?0:v; update(); }));
+  $$("#common-fields input").forEach(i=>i.addEventListener("input",()=>{ const v=parseFloat(i.value); S[i.id.slice(2)]=isNaN(v)?0:v; update(); }));
 }
-for(const f of ["tasks","days","minutes","rate","r","c0"]) $("#f-"+f).addEventListener("input",e=>{ const v=parseFloat(e.target.value); S[f]=isNaN(v)?0:v; update(); });
-$("#country").addEventListener("change",()=>{ load(sit); sync(); update(); });
+for(const f of ["users","tpu","days","minutes","rate","r","pm","ext"]) $("#f-"+f).addEventListener("input",e=>{ const v=parseFloat(e.target.value); S[f]=isNaN(v)?0:v; update(); });
+$("#country").addEventListener("change",()=>{ load(sit); renderPicker(); sync(); update(); });
 $("#hor").addEventListener("change",update);
 $("#reset").addEventListener("click",()=>{ load(sit); sync(); update(); });
 
-let last={};
+let last;
 function update(){
-  const ty=S.tasks*S.days, hrs=ty*S.minutes/60, gross=hrs*S.rate, B=gross*S.r;
-  const i=infra(), staff=S.p.staff*S.p.fte, Cr=i.v+staff+S.p.other, C0=S.c0, net=B-Cr;
-  const be=net>0?Math.max(1,Math.ceil(C0/(net/12))):null;
-  const n=H(); const r=Array.from({length:n},(_,j)=>roi(B,C0,Cr,j+1));
-  const s=SITS.find(x=>x.n===sit);
-  $("#sum-b").textContent=k(B); $("#sum-c0").textContent=k(C0); $("#sum-cr").textContent=k(Cr);
-  $("#calc-b").innerHTML=`<div><span>Tasks per year</span><span>${int(ty)}</span></div><div><span>Hours saved</span><span>${int(hrs)} h</span></div><div><span>Gross value</span><span>${k(gross)}</span></div><div class="total"><span>Realised benefit (× r)</span><span>${k(B)}</span></div>`;
-  $("#cr-title").textContent=`Recurring cost Cᵣ · ${s.t}`;
-  $("#calc-cr").innerHTML=`<div><span>${i.l}</span><span>${k(i.v)}</span></div><div><span>${S.o==="own"?"External audit":"Retrieval, hosting"}</span><span>${k(S.p.other)}</span></div><div><span>Staff (${S.p.staff} FTE)</span><span>${k(staff)}</span></div><div class="total"><span>Cᵣ per year</span><span>${k(Cr)}</span></div>`;
-  $("#res-title").textContent=`Situation ${s.n} · ${LEVELS[s.lvl].name} · ${s.t}`;
-  const beTxt=be===null?"never":"month "+be;
+  const R=calc(S), s=SITS.find(x=>x.n===sit), n=H();
+  $("#sum-b").textContent=k(R.B); $("#sum-c0").textContent=k(R.C0); $("#sum-cr").textContent=k(R.Cr);
+  $("#calc-b").innerHTML=`<div><span>N · Tasks per year</span><span>${int(R.N)}</span></div><div><span>Hours saved (N × t)</span><span>${int(R.hrs)} h</span></div><div><span>Gross value (× l)</span><span>${k(R.gross)}</span></div><div class="total"><span>B · Realized benefit (× r)</span><span>${k(R.B)}</span></div>`;
+  $("#h-pm").textContent=`= ${(S.pm/12).toFixed(2).replace(/0$/,"")} FTE × ${k(S.fte)}`;
+  $("#cr-title").textContent=`Recurring cost Cᵣ · ${ONAME[S.o]}`;
+  const parts=R.parts.filter(p=>p[1]>0.5), t=R.Cr||1;
+  $("#stack").innerHTML=parts.map(p=>`<div style="flex:${p[1]/t} 0 0;background:${p[2]}" title="${p[0]}: ${k(p[1])}"></div>`).join("");
+  $("#legend").innerHTML=parts.map(p=>`<div><i style="background:${p[2]}"></i><span>${p[0]}</span><span class="val">${k(p[1])}</span><span class="pc">${Math.round(p[1]/t*100)}%</span></div>`).join("")+`<div class="total"><i></i><span>Cᵣ per year</span><span class="val">${k(R.Cr)}</span><span class="pc">100%</span></div>`;
+  const staffShare=R.parts[0][1]/t, useShare=(R.parts[1][1]+R.parts[2][1])/t;
+  $("#takeaway").textContent=`Staff is ${Math.round(staffShare*100)}% of the recurring cost, model usage${S.o==="own"?" incl. energy":""} ${Math.round(useShare*100)}%.`;
+  $("#res-title").textContent=`Situation ${s.n} · ${LEVELS[s.lvl].name} · ${ONAME[s.o]}`;
   $("#kpis").innerHTML=[
-    ["Net benefit / year",`<span class="${cls(net)}">${k(net)}</span>`],
-    ["Break-even",beTxt],
-    ...r.map((v,j)=>[`ROI year ${j+1}`,`<span class="${cls(v)}">${pct(v)}</span>`])
+    ["Net benefit per year (B − Cᵣ)",`<span class="${cls(R.net)}">${k(R.net)}</span>`],
+    ["Break-even",beTxt(R.be)],
+    ...R.roi.map((v,j)=>[`ROI year ${j+1}`,`<span class="${cls(v)}">${pct(v)}</span>`])
   ].map(([a,b])=>`<div class="kpi"><span class="k">${a}</span><span class="v">${b}</span></div>`).join("");
-  $("#bar-r1").textContent=pct(r[0]); $("#bar-r3").textContent=pct(r[n-1]); $("#bar-r3l").textContent=`ROI yr ${n}`; $("#bar-be").textContent=be===null?"never":"m "+be;
-  last={s,B,C0,Cr,net,beTxt,r};
+  const ref=(()=>{ const keep=S, keepSit=sit; S=preset(1); const r=calc(S); S=keep; return r; })();
+  $("#refline").innerHTML=sit===1?`Reference values of the worked example: ROI year 1 <b>+53%</b>, year 3 <b>+133%</b>, break-even month <b>6</b> (Switzerland).`:`Compare with situation 1 (reference values): ROI year 1 <b>${pct(ref.roi[0])}</b>, year ${n} <b>${pct(ref.roi[n-1])}</b>, break-even <b>${beTxt(ref.be)}</b>.`;
+  $("#bar-r1").textContent=pct(R.roi[0]); $("#bar-rn").textContent=pct(R.roi[n-1]); $("#bar-rnl").textContent=`ROI yr ${n}`; $("#bar-be").textContent=R.be===null?"never":"m "+R.be;
+  last={s,R,n};
 }
 
 /* notes */
@@ -297,16 +340,17 @@ const KEY="llm-roi-notes";
 try{ const saved=localStorage.getItem(KEY); if(saved) $("#notes").value=saved; }catch(e){}
 $("#notes").addEventListener("input",e=>{ try{ localStorage.setItem(KEY,e.target.value); }catch(err){} });
 $("#copy").addEventListener("click",()=>{
-  const L=last, txt=`Situation ${L.s.n} (${LEVELS[L.s.lvl].name}, ${L.s.t})
-Benefit/yr: ${k(L.B)} | C0: ${k(L.C0)} | Cr/yr: ${k(L.Cr)} | Net/yr: ${k(L.net)}
-Break-even: ${L.beTxt} | ROI yr ${L.r.map((v,j)=>j+1).join("/")}: ${L.r.map(pct).join(" / ")}
-Country defaults: ${$("#country").selectedOptions[0].textContent}
+  const {s,R,n}=last;
+  const txt=`Situation ${s.n}: ${LEVELS[s.lvl].name}, ${ONAME[s.o]} (${$("#country").selectedOptions[0].textContent})
+B: ${k(R.B)}/yr | C0: ${k(R.C0)} | Cr: ${k(R.Cr)}/yr | Net: ${k(R.net)}/yr
+Break-even: ${beTxt(R.be)} | ROI year ${R.roi.map((v,j)=>j+1).join("/")}: ${R.roi.map(pct).join(" / ")}
+Cr split: ${R.parts.filter(p=>p[1]>0.5).map(p=>`${p[0]} ${Math.round(p[1]/(R.Cr||1)*100)}%`).join(", ")}
 
 Notes:
 ${$("#notes").value}`;
-  const done=()=>{ $("#notes-status").textContent="Copied to clipboard."; };
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>{ $("#notes").select(); $("#notes-status").textContent="Copy failed. Select the notes and copy them manually."; }); }
-  else { $("#notes").select(); $("#notes-status").textContent="Select the notes and copy them manually."; }
+  const ok=()=>{ $("#notes-status").textContent="Copied to clipboard."; };
+  const fail=()=>{ $("#notes").select(); $("#notes-status").textContent="Copy failed. Select the notes and copy them manually."; };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(fail); else fail();
 });
 
 load(1); renderPicker(); sync(); update();
