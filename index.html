@@ -12,7 +12,7 @@
   --bg:#F3F5F4; --surface:#FFFFFF; --surface-2:#EEF1F0;
   --ink:#16202B; --ink-2:#465261; --muted:#76818D; --line:#DAE0E2; --line-2:#C5CDD1;
   --accent:#1F5FBF; --accent-soft:#E4ECF8;
-  --pos:#2B7A4B; --neg:#B0372D;
+  --pos:#2B7A4B; --neg:#B0372D; --pos-soft:#E3F1E8; --neg-soft:#F8E6E3;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
@@ -23,7 +23,7 @@
     color-scheme:dark;
     --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
     --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
-    --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+    --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F; --pos-soft:#15291E; --neg-soft:#321A17;
     --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
   }
 }
@@ -31,7 +31,7 @@
   color-scheme:dark;
   --bg:#0E1317; --surface:#161E24; --surface-2:#1C262D;
   --ink:#E6ECEF; --ink-2:#AAB5BE; --muted:#7F8B96; --line:#28333B; --line-2:#36434C;
-  --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F;
+  --accent:#6E9FEE; --accent-soft:#1A2A40; --pos:#5DBF88; --neg:#EE7B6F; --pos-soft:#15291E; --neg-soft:#321A17;
     --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
 }
 *{box-sizing:border-box}
@@ -121,6 +121,16 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
   .sit .top{flex-direction:column;gap:0}
   .sit .t{font-size:13.5px}
 }
+@media (max-width:560px){
+  .wrap .scn{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 8px}
+  .wrap .scn .lab,.wrap .scn .corner{grid-column:1/-1}
+  .wrap .scn .corner{display:none}
+  .wrap .scn .lab{margin-top:4px}
+  .wrap .scn .in input{font-size:14px;padding:6px 6px}
+  .wrap .scn .base{font-size:14px;padding:6px 4px;text-align:center}
+  .wrap .scn .res{font-size:12.5px;padding:2px 2px;white-space:nowrap;text-align:center}
+  .wrap th,.wrap td{padding:7px 5px;font-size:12.5px}
+}
 @media (max-width:380px){ .fields{grid-template-columns:1fr} }
 
 /* cost distribution */
@@ -137,6 +147,29 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
 .refline{font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:6px;padding:8px 10px}
 .refline b{font-family:var(--mono);font-weight:500}
 .fields.single{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cmp td.o{font-family:var(--body)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:8px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font-weight:500;color:var(--muted);font-size:12px}
+td{font-family:var(--mono);font-variant-numeric:tabular-nums}
+td:first-child{font-family:var(--body)}
+tr.focal td{background:var(--accent-soft)}
+.badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin-left:6px}
+.note{font-size:12.5px;color:var(--ink-2)}
+.scn{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:8px 10px;align-items:center}
+.scn>*{min-width:0}
+.scn .in input{width:100%;min-width:0}
+.scn .h{font-size:12px;font-weight:600;text-align:center;padding:4px 0;border-radius:4px}
+.scn .h.w{color:var(--neg);background:var(--neg-soft)} .scn .h.b{color:var(--pos);background:var(--pos-soft)} .scn .h.m{color:var(--ink-2);background:var(--surface-2)}
+.scn .lab{font-size:13px;color:var(--ink-2);font-weight:500}
+.scn .lab small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
+.scn .in input{text-align:right;padding:7px 8px;font-size:15px}
+.scn .base{font-family:var(--mono);font-size:15px;text-align:right;padding:7px 8px;color:var(--ink-2)}
+.scn .in.edited{border-color:var(--accent)}
+.scn .sep{grid-column:1/-1;border-top:1px dashed var(--line-2);margin:4px 0}
+.scn .res{font-family:var(--mono);font-size:15px;font-weight:500;text-align:right;padding:2px 8px;font-variant-numeric:tabular-nums}
 .sub{font-size:12px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 </style>
 </head>
@@ -151,7 +184,7 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
 
   <div class="settings">
     <label for="country">Country defaults
-      <select id="country"><option value="ch">Switzerland · CHF</option><option value="at">Austria · EUR</option><option value="de">Germany · EUR</option></select>
+      <select id="country"><option value="at" selected>Austria · EUR</option><option value="de">Germany · EUR</option><option value="ch">Switzerland · CHF</option></select>
     </label>
     <label for="hor">Time horizon
       <select id="hor"><option value="3">3 years</option><option value="5">5 years</option></select>
@@ -169,7 +202,7 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
           <div class="field"><label for="f-tpu">Tasks per user and day</label><div class="in"><input id="f-tpu" type="number" inputmode="decimal" min="0"><span class="unit">tasks</span></div></div>
           <div class="field"><label for="f-days">Working days per year</label><div class="in"><input id="f-days" type="number" inputmode="decimal" min="0"><span class="unit">days</span></div></div>
           <div class="field"><label for="f-minutes">t · Minutes saved per task</label><div class="in"><input id="f-minutes" type="number" inputmode="decimal" min="0"><span class="unit">min</span></div></div>
-          <div class="field"><label for="f-rate">l · Cost per hour</label><div class="in"><input id="f-rate" type="number" inputmode="decimal" min="0"><span class="unit cur">CHF/h</span></div><span class="hint">Fully loaded labor cost</span></div>
+          <div class="field"><label for="f-rate">l · Cost per hour</label><div class="in"><input id="f-rate" type="number" inputmode="decimal" min="0"><span class="unit cur">EUR/h</span></div><span class="hint">Fully loaded labor cost</span></div>
           <div class="field"><label for="f-r">r · Realization factor</label><div class="in"><input id="f-r" type="number" inputmode="decimal" min="0" max="1" step="0.05"><span class="unit">0–1</span></div><span class="hint">Adoption, review effort, exceptions</span></div>
         </div>
         <div class="calc" id="calc-b"></div>
@@ -179,7 +212,7 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
         <div class="card-head"><h3>One-off cost C₀</h3><span class="sum" id="sum-c0"></span></div>
         <div class="fields">
           <div class="field"><label for="f-pm">Internal effort</label><div class="in"><input id="f-pm" type="number" inputmode="decimal" min="0" step="0.5"><span class="unit">PM</span></div><span class="hint" id="h-pm"></span></div>
-          <div class="field"><label for="f-ext">External one-off cost</label><div class="in"><input id="f-ext" type="number" inputmode="decimal" min="0" step="1000"><span class="unit cur">CHF</span></div><span class="hint">E.g. paid system integrator</span></div>
+          <div class="field"><label for="f-ext">External one-off cost</label><div class="in"><input id="f-ext" type="number" inputmode="decimal" min="0" step="1000"><span class="unit cur">EUR</span></div><span class="hint">E.g. paid system integrator</span></div>
         </div>
       </div>
 
@@ -205,6 +238,19 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(
       <p class="formula">ROI after n years = (n × B − C₀ − n × Cᵣ) / (C₀ + n × Cᵣ). Break-even month = C₀ / ((B − Cᵣ) / 12).</p>
     </div>
   </div>
+
+  <section class="card">
+    <div class="card-head"><h3>Rent, Host or Own at your settings</h3></div>
+    <p class="note">What the other two options would give with the same benefit, C₀, hosting, assessments and cost per FTE. Their model usage uses the reference values; their staff is your FTE plus the reference difference between the options.</p>
+    <div class="tbl-wrap"><table class="cmp"><thead id="cmp-head"><tr><th>Option</th><th>Cᵣ / year</th><th>Break-even</th><th>ROI yr 1</th><th>ROI yr 2</th><th>ROI yr 3</th></tr></thead><tbody id="cmp"></tbody></table></div>
+    <p class="note" id="cmp-note"></p>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h3>Worst case and best case</h3><button type="button" class="btn" id="scn-reset">Reset to ±30%</button></div>
+    <p class="note">Base is your current setting. Worst and best start at ±30% on the uncertain parameters; type your own values to override them.</p>
+    <div class="scn" id="scn"></div>
+  </section>
 
   <section class="card">
     <div class="card-head"><h3><label for="notes">Notes for the discussion</label></h3></div>
@@ -238,10 +284,10 @@ const COUNTRY={
 const SITS=[
   {n:1,lvl:"basic",o:"rent",t:"Start small",d:()=>"Mid-tier API with retrieval",tag:"Worked example"},
   {n:2,lvl:"basic",o:"host",t:"Controlled basic",d:()=>"Open-weight model on 1 rented GPU",tag:"Group 2"},
-  {n:3,lvl:"basic",o:"own",t:"Own small server",d:()=>`1-GPU server (${cur()} ${Math.round(C().hw.basic/1000)}k) on premises`,tag:"Group 3"},
+  {n:3,lvl:"basic",o:"own",t:"Own small server",d:()=>"1-GPU server on premises",tag:"Group 3"},
   {n:4,lvl:"adv",o:"rent",t:"Scale fast",d:()=>"Frontier API for multi-step agents",tag:"Group 4"},
   {n:5,lvl:"adv",o:"host",t:"Scale with control",d:()=>"70–120B open-weight on 4 rented GPUs",tag:"Group 5"},
-  {n:6,lvl:"adv",o:"own",t:"Own GPU server",d:()=>`4-GPU server (${cur()} ${Math.round(C().hw.adv/1000)}k), can serve more use cases`,tag:"Group 6"}
+  {n:6,lvl:"adv",o:"own",t:"Own GPU server",d:()=>"4-GPU server, can serve more use cases",tag:"Group 6"}
 ];
 const ONAME={rent:"Rent",host:"Host",own:"Own"};
 const FIELDS={
@@ -255,13 +301,27 @@ const C=()=>COUNTRY[$("#country").value];
 const cur=()=>C().cur;
 const H=()=>+$("#hor").value;
 
-let sit=1, S;
+let sit=1, S, scn={worst:{},best:{}};
+const SCN=[
+  ["users","Users","users",[1,1],v=>Math.round(v)],
+  ["minutes","t · Minutes saved per task","min",[0.7,1.3],v=>Math.round(v*10)/10],
+  ["r","r · Realization factor","0–1",[0.7,1.3],v=>Math.min(1,Math.round(v*100)/100)],
+  ["staff","Staff","FTE",[1.3,0.7],v=>Math.round(v*100)/100],
+  ["pm","One-off internal effort","PM",[1.3,0.7],v=>Math.round(v*10)/10]
+];
+const scnVal=(c,key)=>{ const d=SCN.find(x=>x[0]===key); if(key in scn[c]) return scn[c][key]; return d[4](S[key]*d[3][c==="worst"?0:1]); };
+function scnState(c){ const st={...S,p:{...S.p}}; for(const [key] of SCN) st[key]=scnVal(c,key); return st; }
+function optState(o){
+  if(o===S.o) return S;
+  const ref=preset(SITS.find(x=>x.lvl===S.lvl&&x.o===o).n);
+  return {...S,o,p:ref.p,staff:Math.max(0,S.staff+OPTS[S.lvl][o].staff-OPTS[S.lvl][S.o].staff)};
+}
 function preset(n){ const s=SITS.find(x=>x.n===n), L=LEVELS[s.lvl], c=C();
   const p={...OPTS[s.lvl][s.o]};
   if(s.o==="rent") p.fx=c.fx; if(s.o==="host") p.gpuH=c.gpuH; if(s.o==="own"){ p.hw=c.hw[s.lvl]; p.kwh=c.kwh; }
   return {lvl:s.lvl,o:s.o,users:L.users,tpu:L.tpu,days:L.days,minutes:L.minutes,rate:c.rate,r:L.r,pm:L.pm,ext:0,
           staff:p.staff,fte:c.fte,hosting:L.hosting,assess:L.assess,p}; }
-function load(n){ sit=n; S=preset(n); }
+function load(n){ sit=n; S=preset(n); scn={worst:{},best:{}}; }
 
 /* model */
 function calc(st){
@@ -310,6 +370,33 @@ for(const f of ["users","tpu","days","minutes","rate","r","pm","ext"]) $("#f-"+f
 $("#country").addEventListener("change",()=>{ load(sit); renderPicker(); sync(); update(); });
 $("#hor").addEventListener("change",update);
 $("#reset").addEventListener("click",()=>{ load(sit); sync(); update(); });
+$("#scn-reset").addEventListener("click",()=>{ scn={worst:{},best:{}}; update(); });
+function renderScn(){
+  const n=H(), res={worst:calc(scnState("worst")),base:calc(S),best:calc(scnState("best"))};
+  const ae=document.activeElement, keepId=ae&&ae.id&&ae.id.startsWith("s-")?ae.id:null, pos=keepId?ae.selectionStart:null;
+  let h=`<div class="corner"></div><div class="h w">Worst</div><div class="h m">Base</div><div class="h b">Best</div>`;
+  for(const [key,l,u] of SCN){
+    h+=`<div class="lab">${l}<small>${u}</small></div>`;
+    h+=`<div class="in${key in scn.worst?" edited":""}"><input id="s-worst-${key}" type="number" inputmode="decimal" min="0" aria-label="${l}, worst case" value="${scnVal("worst",key)}"></div>`;
+    h+=`<div class="base">${S[key]}</div>`;
+    h+=`<div class="in${key in scn.best?" edited":""}"><input id="s-best-${key}" type="number" inputmode="decimal" min="0" aria-label="${l}, best case" value="${scnVal("best",key)}"></div>`;
+  }
+  h+=`<div class="sep"></div>`;
+  const rows=[["Net benefit per year",r=>`<span class="${cls(r.net)}">${k(r.net)}</span>`],["Break-even",r=>r.be===null?"never":"month "+r.be],...Array.from({length:n},(_,j)=>[`ROI year ${j+1}`,r=>`<span class="${cls(r.roi[j])}">${pct(r.roi[j])}</span>`])];
+  for(const [l,f] of rows) h+=`<div class="lab">${l}</div><div class="res">${f(res.worst)}</div><div class="res">${f(res.base)}</div><div class="res">${f(res.best)}</div>`;
+  $("#scn").innerHTML=h;
+  $$("#scn input").forEach(i=>i.addEventListener("input",()=>{ const [,c,key]=i.id.split("-"); const v=parseFloat(i.value); if(isNaN(v)) return; scn[c][key]=v; update(); }));
+  if(keepId){ const el=document.getElementById(keepId); if(el){ el.focus(); try{ el.setSelectionRange(pos,pos); }catch(e){} } }
+  return res;
+}
+function renderCmp(){
+  const n=H(); $("#cmp-head").innerHTML=`<tr><th>Option</th><th>Cᵣ / year</th><th>Break-even</th>${Array.from({length:n},(_,j)=>`<th>ROI yr ${j+1}</th>`).join("")}</tr>`;
+  const rows=["rent","host","own"].map(o=>({o,r:calc(optState(o))}));
+  $("#cmp").innerHTML=rows.map(({o,r})=>`<tr class="${o===S.o?"focal":""}"><td>${ONAME[o]}${o===S.o?'<span class="badge">your setting</span>':""}</td><td>${k(r.Cr)}</td><td>${beTxt(r.be)}</td>${r.roi.map(v=>`<td class="${cls(v)}">${pct(v)}</td>`).join("")}</tr>`).join("");
+  const best=rows.reduce((a,b)=>b.r.roi[n-1]>a.r.roi[n-1]?b:a), me=rows.find(x=>x.o===S.o);
+  $("#cmp-note").textContent=best.o===S.o?`${ONAME[S.o]} has the highest ROI of the three options at these settings.`:`${ONAME[best.o]} has the highest ROI here. ${ONAME[S.o]} costs ${k(me.r.Cr-best.r.Cr)} more per year: is the extra control worth that?`;
+  return rows;
+}
 
 let last;
 function update(){
@@ -329,10 +416,11 @@ function update(){
     ["Break-even",beTxt(R.be)],
     ...R.roi.map((v,j)=>[`ROI year ${j+1}`,`<span class="${cls(v)}">${pct(v)}</span>`])
   ].map(([a,b])=>`<div class="kpi"><span class="k">${a}</span><span class="v">${b}</span></div>`).join("");
-  const ref=(()=>{ const keep=S, keepSit=sit; S=preset(1); const r=calc(S); S=keep; return r; })();
-  $("#refline").innerHTML=sit===1?`Reference values of the worked example: ROI year 1 <b>+53%</b>, year 3 <b>+133%</b>, break-even month <b>6</b> (Switzerland).`:`Compare with situation 1 (reference values): ROI year 1 <b>${pct(ref.roi[0])}</b>, year ${n} <b>${pct(ref.roi[n-1])}</b>, break-even <b>${beTxt(ref.be)}</b>.`;
+  const ref=calc(preset(1));
+  $("#refline").innerHTML=`Situation 1 with reference values: ROI year 1 <b>${pct(ref.roi[0])}</b>, year ${n} <b>${pct(ref.roi[n-1])}</b>, break-even <b>${beTxt(ref.be)}</b>.${$("#country").value!=="ch"?" The slides use Swiss values.":""}`;
   $("#bar-r1").textContent=pct(R.roi[0]); $("#bar-rn").textContent=pct(R.roi[n-1]); $("#bar-rnl").textContent=`ROI yr ${n}`; $("#bar-be").textContent=R.be===null?"never":"m "+R.be;
-  last={s,R,n};
+  const cmpRows=renderCmp(), scnRes=renderScn();
+  last={s,R,n,cmpRows,scnRes};
 }
 
 /* notes */
@@ -340,11 +428,13 @@ const KEY="llm-roi-notes";
 try{ const saved=localStorage.getItem(KEY); if(saved) $("#notes").value=saved; }catch(e){}
 $("#notes").addEventListener("input",e=>{ try{ localStorage.setItem(KEY,e.target.value); }catch(err){} });
 $("#copy").addEventListener("click",()=>{
-  const {s,R,n}=last;
+  const {s,R,n,cmpRows,scnRes}=last;
   const txt=`Situation ${s.n}: ${LEVELS[s.lvl].name}, ${ONAME[s.o]} (${$("#country").selectedOptions[0].textContent})
 B: ${k(R.B)}/yr | C0: ${k(R.C0)} | Cr: ${k(R.Cr)}/yr | Net: ${k(R.net)}/yr
 Break-even: ${beTxt(R.be)} | ROI year ${R.roi.map((v,j)=>j+1).join("/")}: ${R.roi.map(pct).join(" / ")}
 Cr split: ${R.parts.filter(p=>p[1]>0.5).map(p=>`${p[0]} ${Math.round(p[1]/(R.Cr||1)*100)}%`).join(", ")}
+Options at same settings (ROI year ${n}): ${cmpRows.map(x=>`${ONAME[x.o]} ${pct(x.r.roi[n-1])}`).join(", ")}
+Worst / base / best ROI: ${scnRes.base.roi.map((_,j)=>`year ${j+1} ${["worst","base","best"].map(c=>pct(scnRes[c].roi[j])).join(" / ")}`).join("; ")}
 
 Notes:
 ${$("#notes").value}`;
